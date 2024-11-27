@@ -1,5 +1,5 @@
 <style>
-.colorbox { width: 100px; height: 25px; } /* border: 1px solid #000; } */
+.colorbox { width: 100px; height: 30px; border: 1px solid #000; }
 </style>
 
 # Citadel Official Colours Table
@@ -15,7 +15,7 @@ The table is complete as of *November 2024* and uses the official names and hex 
 
 | Name                     | Type      | Finish  | Code              | Color |
 | ----                     | ----      | ------  | -------           | ----- |
-| Chaos Black              | spray     |         | `#000000`         | <span style="background: #000000; width: 100px; height: 25px;" /> |
+| Chaos Black              | spray     |         | `#000000`         | <div class="colorbox" style="background: #000000;" /> |
 | Death Guard Green        | spray     |         | `#556229`         | <div class="colorbox" style="background: #556229;" /> |
 | Grey Seer                | spray     |         | `#A2A5A7`         | <div class="colorbox" style="background: #A2A5A7;" /> |
 | Macragge Blue            | spray     |         | `#0F3D7C`         | <div class="colorbox" style="background: #0F3D7C;" /> |
