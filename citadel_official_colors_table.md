@@ -15,7 +15,7 @@ The table is complete as of *November 2024* and uses the official names and hex 
 
 | Name                     | Type      | Finish  | Code              | Color |
 | ----                     | ----      | ------  | -------           | ----- |
-| Chaos Black              | spray     |         | `#000000`         | <div class="colorbox" style="background: #000000;"></div> |
+| Chaos Black              | spray     |         | `#000000`         | <div style="background: #000000; width: 100px; height: 25px;"></div> |
 | Death Guard Green        | spray     |         | `#556229`         | <div class="colorbox" style="background: #556229;"></div> |
 | Grey Seer                | spray     |         | `#A2A5A7`         | <div class="colorbox" style="background: #A2A5A7;"></div> |
 | Macragge Blue            | spray     |         | `#0F3D7C`         | <div class="colorbox" style="background: #0F3D7C;"></div> |
