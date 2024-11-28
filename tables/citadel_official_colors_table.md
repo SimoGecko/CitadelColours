@@ -1,6 +1,3 @@
-<style>
-.colorbox { width: 100px; height: 30px; border: 1px solid #000; }
-</style>
 
 # Citadel Official Colours Table
 
@@ -12,6 +9,10 @@ The table is complete as of *November 2024* and uses the official names and hex 
 - For colors whose visualization is a gradient, the hex code is provided as `hex1_hex2`, with `hex1` always the darker color and `hex2` the lighter color.  
 - Metal colors use a radial gradient, shades use a vertical gradient, contrast colors use a horizontal gradient and technical colors use a discrete gradient.  
 - Colors are sorted by type and then by name.
+
+<style>
+.colorbox { width: 100px; height: 30px; border: 1px solid #000; }
+</style>
 
 | Name                     | Type      | Finish  | Code              | Color |
 | ----                     | ----      | ------  | -------           | ----- |

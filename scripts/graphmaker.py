@@ -8,7 +8,7 @@ canvassize = 2048
 margin = 50
 
 # List of named colors and their hex values
-with open('../colors_taleofp.json', 'r') as file:#colors_gwofficial colors_taleofp
+with open('../colors_taleofp.json', 'r') as file: #colors_gwofficial colors_taleofp
     color_dict = json.load(file)
 
 # Function to convert hex to RGB
@@ -91,7 +91,7 @@ mode = 'WHEEL' # PCA
 
 def hsl_to_wheel(hsl):
     h, s, l = hsl
-    a = math.radians(h*360)
+    a = math.radians(h*360-90)
     d = lerp(l, 0.65, s)
     d = sigmoid(d, 2)
     x = canvassize/2 + math.cos(a) * (canvassize/2-margin)*d
