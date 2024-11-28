@@ -57,7 +57,7 @@ def extract_swatches_from_grid(image_path, swatch_size, stride_x, stride_y, grid
             # Store results
             results.append((text, avg_color_rgb, avg_color_hex))
 
-    cv2.imwrite('output_image.png', output_image)
+    cv2.imwrite('extern/output_image.png', output_image)
     return results
 
 

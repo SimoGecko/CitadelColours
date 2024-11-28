@@ -8,7 +8,7 @@ canvassize = 2048
 margin = 50
 
 # List of named colors and their hex values
-with open('colors_taleofp.json', 'r') as file:#colors_gwofficial colors_taleofp
+with open('../colors_taleofp.json', 'r') as file:#colors_gwofficial colors_taleofp
     color_dict = json.load(file)
 
 # Function to convert hex to RGB
@@ -135,7 +135,7 @@ for name, hex_code in color_dict.items(): # sorted_colors:
 
     if mode == 'PCA':
         x, y = name_to_points[name]
-        print(f'drawCircle("{hex_code}", {margin + (canvassize-margin*2)*x:.2f}, {margin + (canvassize-margin*2)*y:.2f}, "{name}");')
+        print(f'    ["{hex_code}", {margin + (canvassize-margin*2)*x:.2f}, {margin + (canvassize-margin*2)*y:.2f}, "{name}"],')
     elif mode == 'WHEEL':
         x, y = name_to_points[name]
         print(f'    ["{hex_code}", {x:.2f}, {y:.2f}, "{name}"],')

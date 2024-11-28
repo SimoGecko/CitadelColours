@@ -2,7 +2,7 @@ import colorsys
 import json5 as json
 
 # List of named colors and their hex values
-with open('colors_taleofp.json', 'r') as file:
+with open('../colors_taleofp.json', 'r') as file:
     color_dict = json.load(file)
 
 # Function to convert hex to RGB
@@ -37,7 +37,7 @@ def quantize_hue(hue, step=0.1):
 sorted_colors = sorted(color_dict.items(), key=lambda x: (quantize_hue(rgb_to_hsl(hex_to_rgb(x[1]))[0]), rgb_to_hsl(hex_to_rgb(x[1]))[2]))
 
 # Open the file for writing the sorted colors
-with open("sorted_colors.md", "w") as file:
+with open("output/sorted_colors.md", "w") as file:
     # HEX RGB HSL CMYK
     file.write('<style>\n.colorbox { width: 100px; height: 30px; border: 1px solid #000; }\n</style>\n\n')
     file.write('| Name | Color | HEX | RGB | HSL | CMYK |\n')

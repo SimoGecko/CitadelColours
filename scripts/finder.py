@@ -39,7 +39,7 @@ def closest_color_name(color, named_colors_rgb):
 
 if __name__ == "__main__":
     # Load colors from JSON file
-    with open('colors_taleofp.json', 'r') as file:
+    with open('../colors_taleofp.json', 'r') as file:
         colors_dict = json.load(file)
 
     # Convert named colors to RGB format
