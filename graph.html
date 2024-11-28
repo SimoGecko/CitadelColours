@@ -1,0 +1,216 @@
+<div style="width: 2048px; height: 2048px; border: 1px solid black;">
+  <canvas id="myCanvas" width="2048" height="2048"></canvas>
+</div>
+
+<script>
+  var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext("2d");
+
+  // BACKGROUND
+  //ctx.fillStyle = '#efefef';
+  //ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+  // Function to draw a circle and a label at a specific (x, y) position
+  function drawCircle(color, x, y, name) {
+    ctx.beginPath();
+    ctx.arc(x, y, 50, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+    if (color == '#FFFFFF'){
+      ctx.strokeStyle = 'black';
+      ctx.stroke();
+    }
+  }
+
+  function drawLabel(color, x, y, name) {
+    var textWidth = ctx.measureText(name).width;
+    ctx.fillStyle = 'white';
+    ctx.strokeStyle = 'black';
+    ctx.strokeText(name, x-textWidth/2, y+40);
+    ctx.fillText  (name, x-textWidth/2, y+40);
+  }
+
+  function drawColorWheel() {
+
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const radius = width/2; // Radius of the wheel
+
+    // Draw the lines
+    for (let hue = 15; hue < 360; hue += 30) {
+        const angle = hue * (Math.PI / 180);
+        const x = centerX + Math.cos(angle) * radius*0.9;
+        const y = centerY + Math.sin(angle) * radius*0.9;
+
+        // Draw a line for the current hue
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(x, y);
+        //ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`; // Set stroke color to match the hue
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+    function strokeCircle(radius){
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI*2);
+      ctx.stroke();
+    }
+    strokeCircle(radius*.3);
+    strokeCircle(radius*.6);
+    strokeCircle(radius*.9);
+  }
+
+  drawColorWheel();
+
+  ctx.font = "12px Arial";
+  ctx.fillStyle = "black";  // Color of the text
+  ctx.strokeStyle = "white";  // Stroke color (white)
+  ctx.lineWidth = 1;          // Width of the stroke
+
+  // Example circles at different coordinates and colors
+
+let circles = [
+    ["#141314", 1106.38, 940.25, "Abaddon Black"],
+    ["#888c8f", 512.93, 794.26, "Administratum Grey"],
+    ["#00647c", 198.68, 907.70, "Ahriman Blue"],
+    ["#17466f", 580.49, 735.29, "Alaitoc Blue"],
+    ["#233d7d", 639.67, 667.77, "Altdorf Guard Blue"],
+    ["#c58336", 1557.42, 1466.02, "Averland Sunset"],
+    ["#33b4cf", 410.17, 911.97, "Baharroth Blue"],
+    ["#966326", 1448.93, 1384.49, "Balor Brown"],
+    ["#736153", 1332.29, 1214.88, "Baneblade Brown"],
+    ["#361f29", 1180.18, 891.17, "Barak-Nar Burgundy"],
+    ["#d4793f", 1676.96, 1290.37, "Bestigor Flesh"],
+    ["#4f2f2b", 1264.50, 980.42, "Bloodreaver Flesh"],
+    ["#90b4d2", 311.08, 657.91, "Blue Horror"],
+    ["#855751", 1431.26, 1067.74, "Bugman's Glow"],
+    ["#a86c5a", 1621.41, 1118.92, "Cadian Fleshtone"],
+    ["#0a4c94", 439.80, 632.82, "Caledor Sky"],
+    ["#4e6fc0", 545.08, 583.13, "Calgar Blue"],
+    ["#182e28", 859.26, 1093.63, "Caliban Green"],
+    ["#313324", 1042.70, 1176.57, "Castellan Green"],
+    ["#382621", 1175.61, 1069.33, "Catachan Flesh"],
+    ["#92a0a2", 352.41, 982.13, "Celestra Grey"],
+    ["#b6bbc0", 273.55, 576.21, "Corax White"],
+    ["#191c20", 1012.90, 998.26, "Corvus Black"],
+    ["#4b435c", 944.04, 720.03, "Daemonette Hide"],
+    ["#2a3740", 898.01, 1008.02, "Dark Reaper"],
+    ["#595f68", 745.07, 799.57, "Dawnstone"],
+    ["#646447", 1181.71, 1283.44, "Death Guard Green"],
+    ["#292924", 1031.28, 1086.80, "Death Korps Drab"],
+    ["#9f5435", 1547.70, 1155.45, "Deathclaw Brown"],
+    ["#4d492e", 1120.14, 1219.58, "Deathworld Forest"],
+    ["#ac97d8", 875.19, 230.00, "Dechala Lilac"],
+    ["#b6baab", 1221.61, 1816.57, "Deepkin Flesh"],
+    ["#461b15", 1383.30, 997.21, "Doombull Brown"],
+    ["#f1d985", 1588.68, 1633.75, "Dorn Yellow"],
+    ["#332827", 1097.51, 1028.53, "Dryad Bark"],
+    ["#6a6932", 1228.68, 1358.90, "Elysian Green"],
+    ["#e2639b", 1694.62, 690.27, "Emperor's Children"],
+    ["#2e3034", 945.05, 933.82, "Eshin Grey"],
+    ["#b52a2d", 1673.67, 987.50, "Evil Sunz Scarlet"],
+    ["#5d7b94", 582.50, 850.39, "Fenrisian Grey"],
+    ["#f36c2b", 1749.02, 1235.02, "Fire Dragon Bright"],
+    ["#f4b809", 1495.46, 1528.89, "Flash Gitz Yellow"],
+    ["#cfb697", 1735.72, 1468.94, "Flayed One Flesh"],
+    ["#f2ade2", 1590.28, 435.82, "Fulgrim Pink"],
+    ["#441c22", 1330.81, 927.03, "Gal Vorbak Red"],
+    ["#7fd4bb", 294.08, 1256.20, "Gauss Blaster Green"],
+    ["#744f94", 1043.02, 522.99, "Genestealer Purple"],
+    ["#593d36", 1259.39, 1065.35, "Gorthor Brown"],
+    ["#9ca0a1", 341.69, 846.08, "Grey Seer"],
+    ["#977848", 1360.52, 1377.18, "Hobgrot Hide"],
+    ["#0d62a0", 463.74, 719.39, "Hoeth Blue"],
+    ["#13252b", 810.81, 1019.16, "Incubi Darkness"],
+    ["#9f9d82", 1339.01, 1532.67, "Ionrach Skin"],
+    ["#ba613f", 1674.25, 1189.38, "Jokaero Orange"],
+    ["#034c44", 333.16, 1103.63, "Kabalite Green"],
+    ["#966a9f", 1220.34, 478.99, "Kakophoni Purple"],
+    ["#142134", 802.62, 862.33, "Kantor Blue"],
+    ["#937e69", 1410.38, 1303.85, "Karak Stone"],
+    ["#602025", 1430.07, 920.76, "Khorne Red"],
+    ["#c6906d", 1772.26, 1320.22, "Kislev Flesh"],
+    ["#6f4942", 1345.82, 1079.11, "Knight-Questor Flesh"],
+    ["#ada879", 1418.58, 1574.42, "Krieg Khaki"],
+    ["#414b33", 1017.20, 1261.31, "Loren Forest"],
+    ["#3394c3", 426.58, 817.67, "Lothern Blue"],
+    ["#f69069", 1835.40, 1212.60, "Lugganath Orange"],
+    ["#132f32", 756.42, 1089.55, "Lupercal Green"],
+    ["#1c3167", 713.46, 717.39, "Macragge Blue"],
+    ["#404951", 856.43, 932.10, "Mechanicus Standard Grey"],
+    ["#912724", 1597.23, 1033.13, "Mephiston Red"],
+    ["#5d9a32", 961.63, 1574.15, "Moot Green"],
+    ["#ba9f81", 1624.60, 1391.05, "Morghast Bone"],
+    ["#523322", 1285.97, 1145.61, "Mournfang Brown"],
+    ["#221c34", 973.55, 844.42, "Naggaroth Night"],
+    ["#111a28", 887.93, 848.49, "Night Lords Blue"],
+    ["#1c2121", 946.26, 1078.13, "Nocturne Green"],
+    ["#82885a", 1222.17, 1448.20, "Nurgling Green"],
+    ["#9d8f57", 1390.85, 1459.73, "Ogryn Camo"],
+    ["#7b874e", 1132.35, 1453.26, "Orruk Flesh"],
+    ["#d2c4bd", 1860.91, 1326.50, "Pallid Wych Flesh"],
+    ["#f6d026", 1498.59, 1618.50, "Phalanx Yellow"],
+    ["#302546", 1019.29, 769.22, "Phoenician Purple"],
+    ["#b74855", 1637.42, 905.53, "Pink Horror"],
+    ["#917f76", 1501.55, 1226.10, "Rakarth Flesh"],
+    ["#af5c3c", 1594.93, 1226.42, "Ratskin Flesh"],
+    ["#211413", 1178.33, 982.53, "Rhinox Hide"],
+    ["#4d657f", 656.47, 800.34, "Russ Grey"],
+    ["#5c1e33", 1374.25, 850.66, "Screamer Pink"],
+    ["#d1be9f", 1678.06, 1558.73, "Screaming Skull"],
+    ["#749357", 1028.71, 1514.15, "Skarsnik Green"],
+    ["#373739", 1029.15, 909.99, "Skavenblight Dinge"],
+    ["#884126", 1462.57, 1145.91, "Skrag Brown"],
+    ["#887e99", 942.73, 429.00, "Slaanesh Grey"],
+    ["#325256", 707.43, 1009.17, "Sons of Horus Green"],
+    ["#00556b", 252.46, 835.80, "Sotek Green"],
+    ["#b2544a", 1694.45, 1074.65, "Squig Orange"],
+    ["#675241", 1246.78, 1225.57, "Steel Legion Drab"],
+    ["#192d38", 767.28, 942.87, "Stegadon Scale Green"],
+    ["#555450", 1190.54, 1157.90, "Stormvermin Fur"],
+    ["#656a48", 1111.46, 1337.66, "Straken Green"],
+    ["#258d6e", 514.54, 1188.40, "Sybarite Green"],
+    ["#836b4c", 1319.46, 1300.03, "Tallarn Sand"],
+    ["#c57d49", 1588.78, 1312.09, "Tau Light Ochre"],
+    ["#0c72b6", 374.10, 721.98, "Teclis Blue"],
+    ["#0295b6", 288.67, 918.61, "Temple Guard Blue"],
+    ["#303d57", 840.56, 772.63, "The Fang"],
+    ["#31241f", 1109.75, 1123.31, "Thondia Brown"],
+    ["#014c72", 290.40, 754.41, "Thousand Sons Blue"],
+    ["#2f4b59", 697.69, 886.95, "Thunderhawk Blue"],
+    ["#e6491b", 1751.60, 1144.73, "Troll Slayer Orange"],
+    ["#8d4338", 1518.68, 1073.94, "Tuskgor Fur"],
+    ["#c1c9cb", 146.15, 832.87, "Ulthuan Grey"],
+    ["#dd9552", 1711.63, 1383.62, "Ungor Flesh"],
+    ["#bfa781", 1646.36, 1475.73, "Ushabti Bone"],
+    ["#232f26", 956.37, 1165.62, "Vulkan Green"],
+    ["#31473a", 869.45, 1182.64, "Waaagh! Flesh"],
+    ["#476b43", 893.43, 1317.27, "Warboss Green"],
+    ["#645d73", 951.59, 630.39, "Warpfiend Grey"],
+    ["#075e2e", 477.73, 1380.16, "Warpstone Glow"],
+    ["#a1343b", 1559.48, 951.93, "Wazdakka Red"],
+    ["#ebeef0", 147.28, 633.66, "White Scar"],
+    ["#e03f39", 1772.22, 1033.87, "Wild Rider Red"],
+    ["#672220", 1480.51, 993.90, "Word Bearers Red"],
+    ["#c9beae", 1767.40, 1552.57, "Wraithbone"],
+    ["#3a2746", 1083.34, 833.10, "Xereus Purple"],
+    ["#745438", 1415.15, 1216.96, "XV-88"],
+    ["#f3a014", 1589.64, 1545.45, "Yriel Yellow"],
+    ["#b08047", 1537.34, 1384.64, "Zamesi Desert"],
+    ["#9a7d60", 1498.28, 1309.85, "Zandri Dust"],
+];
+
+circles.forEach(circle => {
+  const [color, x, y, label] = circle;
+  drawCircle(color, x, y, label);
+});
+circles.forEach(circle => {
+  const [color, x, y, label] = circle;
+  drawLabel(color, x, y, label);
+});
+
+</script>

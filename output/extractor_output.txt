@@ -1,0 +1,129 @@
+// CMD
+Abaddon Black                       [20 19 20]     #141314
+Administratum Grey                  [136 140 143]  #888c8f
+Ahriman Blue                        [  0 100 124]  #00647c
+Alaitoc Blue                        [ 23  70 111]  #17466f
+Altdorf Guard Blue                  [ 35  61 125]  #233d7d
+Averland Sunset                     [197 131  54]  #c58336
+Baharroth Blue                      [ 51 180 207]  #33b4cf
+Balor Brown                         [150  99  38]  #966326
+Baneblade Brown                     [115  97  83]  #736153
+Barak-Nar Burgundy                  [54 31 41]     #361f29
+Bestigor Flesh                      [212 121  63]  #d4793f
+Bloodreaver Flesh                   [79 47 43]     #4f2f2b
+Blue Horror                         [144 180 210]  #90b4d2
+Bugman's Glow                       [133  87  81]  #855751
+Cadian Fleshtone                    [168 108  90]  #a86c5a
+Caledor Sky                         [ 10  76 148]  #0a4c94
+Calgar Blue                         [ 78 111 192]  #4e6fc0
+Caliban Green                       [24 46 40]     #182e28
+Castellan Green                     [49 51 36]     #313324
+Catachan Flesh                      [56 38 33]     #382621
+Celestra Grey                       [146 160 162]  #92a0a2
+Corax White                         [182 187 192]  #b6bbc0
+Corvus Black                        [25 28 32]     #191c20
+Daemonette Hide                     [75 67 92]     #4b435c
+Dark Reaper                         [42 55 64]     #2a3740
+Dawnstone                           [ 89  95 104]  #595f68
+Death Guard Green                   [100 100  71]  #646447
+Death Korps Drab                    [41 41 36]     #292924
+Deathclaw Brown                     [159  84  53]  #9f5435
+Deathworld Forest                   [77 73 46]     #4d492e
+Dechala Lilac                       [172 151 216]  #ac97d8
+Deepkin Flesh                       [182 186 171]  #b6baab
+Doombull Brown                      [70 27 21]     #461b15
+Dorn Yellow                         [241 217 133]  #f1d985
+Dryad Bark                          [51 40 39]     #332827
+Elysian Green                       [106 105  50]  #6a6932
+Emperor's Children                  [226  99 155]  #e2639b
+Eshin Grey                          [46 48 52]     #2e3034
+Evil Sunz Scarlet                   [181  42  45]  #b52a2d
+Fenrisian Grey                      [ 93 123 148]  #5d7b94
+Fire Dragon Bright                  [243 108  43]  #f36c2b
+Flash Gitz Yellow                   [244 184   9]  #f4b809
+Flayed One Flesh                    [207 182 151]  #cfb697
+Fulgrim Pink                        [242 173 226]  #f2ade2
+Gal Vorbak Red                      [68 28 34]     #441c22
+Gauss Blaster Green                 [127 212 187]  #7fd4bb
+Genestealer Purple                  [116  79 148]  #744f94
+Gorthor Brown                       [89 61 54]     #593d36
+Grey Seer                           [156 160 161]  #9ca0a1
+Hobgrot Hide                        [151 120  72]  #977848
+Hoeth Blue                          [ 13  98 160]  #0d62a0
+Incubi Darkness                     [19 37 43]     #13252b
+Ionrach Skin                        [159 157 130]  #9f9d82
+Jokaero Orange                      [186  97  63]  #ba613f
+Kabalite Green                      [ 3 76 68]     #034c44
+Kakophoni Purple                    [150 106 159]  #966a9f
+Kantor Blue                         [20 33 52]     #142134
+Karak Stone                         [147 126 105]  #937e69
+Khorne Red                          [96 32 37]     #602025
+Kislev Flesh                        [198 144 109]  #c6906d
+Knight-Questor Flesh                [111  73  66]  #6f4942
+Krieg Khaki                         [173 168 121]  #ada879
+Loren Forest                        [65 75 51]     #414b33
+Lothern Blue                        [ 51 148 195]  #3394c3
+Lugganath Orange                    [246 144 105]  #f69069
+Lupercal Green                      [19 47 50]     #132f32
+Macragge Blue                       [ 28  49 103]  #1c3167
+Mechanicus Standard Grey            [64 73 81]     #404951
+Mephiston Red                       [145  39  36]  #912724
+Moot Green                          [ 93 154  50]  #5d9a32
+Morghast Bone                       [186 159 129]  #ba9f81
+Mournfang Brown                     [82 51 34]     #523322
+Naggaroth Night                     [34 28 52]     #221c34
+Night Lords Blue                    [17 26 40]     #111a28
+Nocturne Green                      [28 33 33]     #1c2121
+Nurgling Green                      [130 136  90]  #82885a
+Ogryn Camo                          [157 143  87]  #9d8f57
+Orruk Flesh                         [123 135  78]  #7b874e
+Pallid Wych Flesh                   [210 196 189]  #d2c4bd
+Phalanx Yellow                      [246 208  38]  #f6d026
+Phoenician Purple                   [48 37 70]     #302546
+Pink Horror                         [183  72  85]  #b74855
+Rakarth Flesh                       [145 127 118]  #917f76
+Ratskin Flesh                       [175  92  60]  #af5c3c
+Rhinox Hide                         [33 20 19]     #211413
+Russ Grey                           [ 77 101 127]  #4d657f
+Screamer Pink                       [92 30 51]     #5c1e33
+Screaming Skull                     [209 190 159]  #d1be9f
+Skarsnik Green                      [116 147  87]  #749357
+Skavenblight Dinge                  [55 55 57]     #373739
+Skrag Brown                         [136  65  38]  #884126
+Slaanesh Grey                       [136 126 153]  #887e99
+Sons of Horus Green                 [50 82 86]     #325256
+Sotek Green                         [  0  85 107]  #00556b
+Squig Orange                        [178  84  74]  #b2544a
+Steel Legion Drab                   [103  82  65]  #675241
+Stegadon Scale Green                [25 45 56]     #192d38
+Stormvermin Fur                     [85 84 80]     #555450
+Straken Green                       [101 106  72]  #656a48
+Sybarite Green                      [ 37 141 110]  #258d6e
+Tallarn Sand                        [131 107  76]  #836b4c
+Tau Light Ochre                     [197 125  73]  #c57d49
+Teclis Blue                         [ 12 114 182]  #0c72b6
+Temple Guard Blue                   [  2 149 182]  #0295b6
+The Fang                            [48 61 87]     #303d57
+Thondia Brown                       [49 36 31]     #31241f
+Thousand Sons Blue                  [  1  76 114]  #014c72
+Thunderhawk Blue                    [47 75 89]     #2f4b59
+Troll Slayer Orange                 [230  73  27]  #e6491b
+Tuskgor Fur                         [141  67  56]  #8d4338
+Ulthuan Grey                        [193 201 203]  #c1c9cb
+Ungor Flesh                         [221 149  82]  #dd9552
+Ushabti Bone                        [191 167 129]  #bfa781
+Vulkan Green                        [35 47 38]     #232f26
+Waaagh! Flesh                       [49 71 58]     #31473a
+Warboss Green                       [ 71 107  67]  #476b43
+Warpfiend Grey                      [100  93 115]  #645d73
+Warpstone Glow                      [ 7 94 46]     #075e2e
+Wazdakka Red                        [161  52  59]  #a1343b
+White Scar                          [235 238 240]  #ebeef0
+Wild Rider Red                      [224  63  57]  #e03f39
+Word Bearers Red                    [103  34  32]  #672220
+Wraithbone                          [201 190 174]  #c9beae
+Xereus Purple                       [58 39 70]     #3a2746
+XV-88                               [116  84  56]  #745438
+Yriel Yellow                        [243 160  20]  #f3a014
+Zamesi Desert                       [176 128  71]  #b08047
+Zandri Dust                         [154 125  96]  #9a7d60
