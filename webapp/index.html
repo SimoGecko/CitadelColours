@@ -68,9 +68,14 @@
   <div id="matches"></div>
 
   <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
+  <!--<script id="paints-json" type="application/json" src="paints.json"></script>-->
+  <script src="paints.json"></script>
   <script>
     // see https://gka.github.io/chroma.js/
-    let paints = {};
+    //let paints = {};
+
+    //import { paints } from './paints.js';
+    //console.log("Loaded paints:", paints);
 
     function LRV(color) {
       // Relative luminance (Y from XYZ, approximated)
@@ -196,6 +201,8 @@
 
       document.getElementById("encycolorpedia").href = `https://encycolorpedia.com/` + hex.replace(/^#/, "");
 
+      // Show charts
+
       // Show closest paints
       const nearest = closestPaints(color);
       document.getElementById("matches").innerHTML = "<h3>Closest paints:</h3>" + nearest.map(p => `
@@ -210,6 +217,7 @@
       // Load paints JSON
       //const resp = await fetch("paints.json");
       //paints = await resp.json();
+      //const paints = JSON.parse(document.getElementById("paints-json").textContent);
 
       const search = document.getElementById("search");
       search.addEventListener("change", e => updateColor(e.target.value));
