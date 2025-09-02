@@ -17,6 +17,7 @@
     input {
       width: 100%;
       padding: 0.5rem;
+      box-sizing: border-box;
       font-size: 1rem;
       margin-bottom: 1rem;
     }
@@ -40,6 +41,22 @@
       margin-right: 0.5rem;
       border-radius: 4px;
     }
+.rgb-bar {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end; /* bars grow from bottom */
+  height: 50px;          /* total chart height */
+  margin-left: 8px;      /* space from numbers */
+}
+
+.bar {
+  flex: 1;               /* equal width */
+  border-radius: 2px 2px 0 0;
+}
+
+.bar.red { background: red; }
+.bar.green { background: green; }
+.bar.blue { background: blue; }
   </style>
 </head>
 <body>
@@ -47,18 +64,13 @@
   <input id="search" type="text" placeholder="Enter HEX, RGB, HSL, or paint name…">
   <div id="swatch"></div>
   <div id="output"></div>
+  <a id="encycolorpedia"></a>
   <div id="matches"></div>
 
   <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
   <script>
+    // see https://gka.github.io/chroma.js/
     let paints = {};
-
-    // ΔE 2000 (simplified, ok for matching paints)
-    function deltaE(labA, labB) {
-      const [L1, a1, b1] = labA;
-      const [L2, a2, b2] = labB;
-      return Math.sqrt((L1-L2)**2 + (a1-a2)**2 + (b1-b2)**2);
-    }
 
     function LRV(color) {
       // Relative luminance (Y from XYZ, approximated)
@@ -69,20 +81,7 @@
       //return (Y*100).toFixed(1);
     }
 
-    function rgbToCmyk(r, g, b) {
-      let c = 1 - (r / 255);
-      let m = 1 - (g / 255);
-      let y = 1 - (b / 255);
-      let k = Math.min(c, m, y);
-      if (k === 1) return [0, 0, 0, 1];
-      return [
-        ((c - k) / (1 - k)),
-        ((m - k) / (1 - k)),
-        ((y - k) / (1 - k)),
-        k
-      ];
-    }
-
+    // NOTES: Blue out seems incorrect
     function rgbToRyb(r, g, b) {
       // r, g, b are 0–255
       // normalize to 0–1
@@ -119,14 +118,14 @@
     }
 
     function closestPaints(hex, n=3) {
-      let inputLab = chroma(hex).lab();
+      //let inputLab = chroma(hex).lab();
       return Object.entries(paints)
         .map(([name, color]) => {
-          let lab = chroma(color).lab();
+          //let lab = chroma(color).lab();
           return {
             name,
             color,
-            deltaE: deltaE(inputLab, lab).toFixed(2)
+            deltaE:  chroma.deltaE(hex, color) //deltaE(inputLab, lab).toFixed(2)
           };
         })
         .sort((a,b) => a.deltaE - b.deltaE)
@@ -157,30 +156,45 @@
       // Show conversions
       const c = chroma(color);
 
+      const hex = c.hex();
+      //const css = c.css();
+      const name = c.name();
       const rgb = c.rgb();//.map(Math.round);
       const hsl = c.hsl();
       const hsv = c.hsv();
-
-      const [C, M, Y, K] = rgbToCmyk(...rgb).map(v => (v*100).toFixed(1));
-
-      const lab = c.lab().map(v => v.toFixed(2));
+      const cmyk = c.cmyk();//rgbToCmyk(...rgb);
+      const lab = c.lab();
       const lrv = LRV(color);
+      const lch = c.lch();
+      //const xyz = c.xyz();
+      const ryb = rgbToRyb(...rgb)
 
-      const ryb = rgbToRyb(...rgb).map(v => (v*100).toFixed(1));
+      function p(x) { return (x*100).toFixed(1) + "%";}
+
+      const maxHeight = 10;
+      const rgbBars = `
+        <div class="rgb-bar">
+          <div class="bar red" style="height:${rgb[0]/255*maxHeight}px"></div>
+          <div class="bar green" style="height:${rgb[1]/255*maxHeight}px"></div>
+          <div class="bar blue" style="height:${rgb[2]/255*maxHeight}px"></div>
+        </div>
+      `;
 
       document.getElementById("output").innerHTML = `
         <h3>Conversions</h3>
         <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%;">
-          <tr><td><b>HEX</b></td><td>${c.hex().toUpperCase()}</td></tr>
-          <tr><td><b>RGB</b></td><td>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</td></tr>
-          <tr><td><b>HSL</b></td>    <td>${hsl[0].toFixed(1)}°, ${(hsl[1]*100).toFixed(1)}%, ${(hsl[2]*100).toFixed(1)}%</td></tr>
-          <tr><td><b>HSV/HSB</b></td><td>${hsv[0].toFixed(1)}°, ${(hsv[1]*100).toFixed(1)}%, ${(hsv[2]*100).toFixed(1)}%</td></tr>
-          <tr><td><b>CMYK</b></td><td>${C}%, ${M}%, ${Y}%, ${K}%</td></tr>
-          <tr><td><b>LAB</b></td><td>L=${lab[0]}, a=${lab[1]}, b=${lab[2]}</td></tr>
-          <tr><td><b>RYB</b></td><td>${ryb.join(", ")}</td></tr>
-          <tr><td><b>LRV</b></td><td>${(lrv*100).toFixed(1)}%</td></tr>
+          <tr><td><b>HEX</b></td>    <td>${hex}</td></tr>
+          <tr><td><b>RGB</b></td>    <td>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</td></tr>
+          <tr><td><b>HSL</b></td>    <td>${hsl[0].toFixed(1)}°, ${p(hsl[1])}, ${p(hsl[2])}</td></tr>
+          <tr><td><b>HSV/HSB</b></td><td>${hsv[0].toFixed(1)}°, ${p(hsv[1])}, ${p(hsv[2])}</td></tr>
+          <tr><td><b>CMYK</b></td>   <td>${p(cmyk[0])}, ${p(cmyk[1])}, ${p(cmyk[2])}, ${p(cmyk[3])}</td></tr>
+          <tr><td><b>LAB</b></td>    <td>${lab[0].toFixed(3)}, ${lab[1].toFixed(3)}, ${lab[2].toFixed(3)}</td></tr>
+          <tr><td><b>RYB</b></td>    <td>${p(ryb[0])}, ${p(ryb[1])}, ${p(ryb[2])}</td></tr>
+          <tr><td><b>LRV</b></td>    <td>${p(lrv)}</td></tr>
         </table>
       `;
+
+      document.getElementById("encycolorpedia").href = `https://encycolorpedia.com/` + hex.replace(/^#/, "");
 
       // Show closest paints
       const nearest = closestPaints(color);
