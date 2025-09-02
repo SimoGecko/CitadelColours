@@ -29,34 +29,34 @@
       border-radius: 8px;
     }
     .result { margin: 0.3rem 0; }
-    .paint {
+    .color {
       display: flex;
       align-items: center;
       margin: 0.5rem 0;
     }
-    .paint-swatch {
+    .color-swatch {
       width: 40px;
       height: 25px;
       border: 1px solid #000;
       margin-right: 0.5rem;
       border-radius: 4px;
     }
-.rgb-bar {
-  display: flex;
-  gap: 2px;
-  align-items: flex-end; /* bars grow from bottom */
-  height: 50px;          /* total chart height */
-  margin-left: 8px;      /* space from numbers */
-}
+    .rgb-bar {
+      display: flex;
+      gap: 2px;
+      align-items: flex-end; /* bars grow from bottom */
+      height: 50px;          /* total chart height */
+      margin-left: 8px;      /* space from numbers */
+    }
 
-.bar {
-  flex: 1;               /* equal width */
-  border-radius: 2px 2px 0 0;
-}
+    .bar {
+      flex: 1;               /* equal width */
+      border-radius: 2px 2px 0 0;
+    }
 
-.bar.red { background: red; }
-.bar.green { background: green; }
-.bar.blue { background: blue; }
+    .bar.red { background: red; }
+    .bar.green { background: green; }
+    .bar.blue { background: blue; }
   </style>
 </head>
 <body>
@@ -68,14 +68,9 @@
   <div id="matches"></div>
 
   <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
-  <!--<script id="paints-json" type="application/json" src="paints.json"></script>-->
-  <script src="paints.json"></script>
+  <script src="../data/ral_colors.json"></script>
   <script>
     // see https://gka.github.io/chroma.js/
-    //let paints = {};
-
-    //import { paints } from './paints.js';
-    //console.log("Loaded paints:", paints);
 
     function LRV(color) {
       // Relative luminance (Y from XYZ, approximated)
@@ -83,7 +78,6 @@
       const srgb = rgb.map(c => (c <= 0.03928 ? c/12.92 : ((c+0.055)/1.055)**2.4));
       const Y = 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
       return Y;
-      //return (Y*100).toFixed(1);
     }
 
     // NOTES: Blue out seems incorrect
@@ -122,15 +116,13 @@
       return [r, y, b];
     }
 
-    function closestPaints(hex, n=3) {
-      //let inputLab = chroma(hex).lab();
-      return Object.entries(paints)
+    function closestColors(colors, hex, n=3) {
+      return Object.entries(colors)
         .map(([name, color]) => {
-          //let lab = chroma(color).lab();
           return {
             name,
             color,
-            deltaE:  chroma.deltaE(hex, color) //deltaE(inputLab, lab).toFixed(2)
+            deltaE:  chroma.deltaE(hex, color)
           };
         })
         .sort((a,b) => a.deltaE - b.deltaE)
@@ -147,6 +139,8 @@
         }
       } catch {
         document.getElementById("output").textContent = "Invalid color input.";
+        document.getElementById("swatch").textContent = "";
+        document.getElementById("matches").textContent = "";
         return;
       }
 
@@ -203,12 +197,12 @@
 
       // Show charts
 
-      // Show closest paints
-      const nearest = closestPaints(color);
-      document.getElementById("matches").innerHTML = "<h3>Closest paints:</h3>" + nearest.map(p => `
-        <div class="paint">
-          <div class="paint-swatch" style="background:${p.color}"></div>
-          ${p.name} (${p.color}, ΔE=${p.deltaE})
+      // Show closest colors
+      const nearest = closestColors(paints, color, 5);
+      document.getElementById("matches").innerHTML = "<h3>Closest colors:</h3>" + nearest.map(p => `
+        <div class="color">
+          <div class="color-swatch" style="background:${p.color}"></div>
+          ${p.name} (${p.color.toLowerCase()}, ΔE=${p.deltaE.toFixed(2)})
         </div>
       `).join("");
     }
@@ -217,7 +211,6 @@
       // Load paints JSON
       //const resp = await fetch("paints.json");
       //paints = await resp.json();
-      //const paints = JSON.parse(document.getElementById("paints-json").textContent);
 
       const search = document.getElementById("search");
       search.addEventListener("change", e => updateColor(e.target.value));
