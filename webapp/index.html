@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Color Finder</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      line-height: 1.5;
+    }
+    h1 {
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    #swatch {
+      width: 100%;
+      height: 150px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+    .result { margin: 0.3rem 0; }
+    .paint {
+      display: flex;
+      align-items: center;
+      margin: 0.5rem 0;
+    }
+    .paint-swatch {
+      width: 40px;
+      height: 25px;
+      border: 1px solid #000;
+      margin-right: 0.5rem;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Color Finder</h1>
+  <input id="search" type="text" placeholder="Enter HEX, RGB, HSL, or paint name…">
+  <div id="swatch"></div>
+  <div id="output"></div>
+  <div id="matches"></div>
+
+  <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
+  <script>
+    let paints = {};
+
+    // ΔE 2000 (simplified, ok for matching paints)
+    function deltaE(labA, labB) {
+      const [L1, a1, b1] = labA;
+      const [L2, a2, b2] = labB;
+      return Math.sqrt((L1-L2)**2 + (a1-a2)**2 + (b1-b2)**2);
+    }
+
+    function LRV(color) {
+      // Relative luminance (Y from XYZ, approximated)
+      const rgb = chroma(color).rgb().map(v => v/255);
+      const srgb = rgb.map(c => (c <= 0.03928 ? c/12.92 : ((c+0.055)/1.055)**2.4));
+      const Y = 0.2126*srgb[0] + 0.7152*srgb[1] + 0.0722*srgb[2];
+      return Y;
+      //return (Y*100).toFixed(1);
+    }
+
+    function rgbToCmyk(r, g, b) {
+      let c = 1 - (r / 255);
+      let m = 1 - (g / 255);
+      let y = 1 - (b / 255);
+      let k = Math.min(c, m, y);
+      if (k === 1) return [0, 0, 0, 1];
+      return [
+        ((c - k) / (1 - k)),
+        ((m - k) / (1 - k)),
+        ((y - k) / (1 - k)),
+        k
+      ];
+    }
+
+    function rgbToRyb(r, g, b) {
+      // r, g, b are 0–255
+      // normalize to 0–1
+      r /= 255; g /= 255; b /= 255;
+
+      // Extract whiteness
+      const w = Math.min(r, g, b);
+      r -= w; g -= w; b -= w;
+
+      const maxG = Math.max(r, g, b);
+
+      // Rotate green and blue into yellow
+      let y = Math.min(r, g);
+      r -= y; g -= y;
+
+      if (b > 0 && g > 0) {
+        b /= 2; g /= 2;
+      }
+
+      y += g; g = 0;
+
+      // Normalize to max
+      const maxY = Math.max(r, y, b);
+      if (maxY > 0) {
+        const n = maxG / maxY;
+        r *= n; y *= n; b *= n;
+      }
+
+      // Add whiteness back
+      r += w; y += w; b += w;
+
+      // Scale to 0–255
+      return [r, y, b];
+    }
+
+    function closestPaints(hex, n=3) {
+      let inputLab = chroma(hex).lab();
+      return Object.entries(paints)
+        .map(([name, color]) => {
+          let lab = chroma(color).lab();
+          return {
+            name,
+            color,
+            deltaE: deltaE(inputLab, lab).toFixed(2)
+          };
+        })
+        .sort((a,b) => a.deltaE - b.deltaE)
+        .slice(0,n);
+    }
+
+    function updateColor(value) {
+      let color;
+      try {
+        if (paints[value]) {
+          color = paints[value];
+        } else {
+          color = chroma(value).hex();
+        }
+      } catch {
+        document.getElementById("output").textContent = "Invalid color input.";
+        return;
+      }
+
+      // Update URL
+      const params = new URLSearchParams(window.location.search);
+      params.set("q", value);
+      history.replaceState({}, "", `${location.pathname}?${params}`);
+
+      // Update swatch
+      document.getElementById("swatch").style.background = color;
+
+      // Show conversions
+      const c = chroma(color);
+
+      const rgb = c.rgb();//.map(Math.round);
+      const hsl = c.hsl();
+      const hsv = c.hsv();
+
+      const [C, M, Y, K] = rgbToCmyk(...rgb).map(v => (v*100).toFixed(1));
+
+      const lab = c.lab().map(v => v.toFixed(2));
+      const lrv = LRV(color);
+
+      const ryb = rgbToRyb(...rgb).map(v => (v*100).toFixed(1));
+
+      document.getElementById("output").innerHTML = `
+        <h3>Conversions</h3>
+        <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%;">
+          <tr><td><b>HEX</b></td><td>${c.hex().toUpperCase()}</td></tr>
+          <tr><td><b>RGB</b></td><td>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</td></tr>
+          <tr><td><b>HSL</b></td>    <td>${hsl[0].toFixed(1)}°, ${(hsl[1]*100).toFixed(1)}%, ${(hsl[2]*100).toFixed(1)}%</td></tr>
+          <tr><td><b>HSV/HSB</b></td><td>${hsv[0].toFixed(1)}°, ${(hsv[1]*100).toFixed(1)}%, ${(hsv[2]*100).toFixed(1)}%</td></tr>
+          <tr><td><b>CMYK</b></td><td>${C}%, ${M}%, ${Y}%, ${K}%</td></tr>
+          <tr><td><b>LAB</b></td><td>L=${lab[0]}, a=${lab[1]}, b=${lab[2]}</td></tr>
+          <tr><td><b>RYB</b></td><td>${ryb.join(", ")}</td></tr>
+          <tr><td><b>LRV</b></td><td>${(lrv*100).toFixed(1)}%</td></tr>
+        </table>
+      `;
+
+      // Show closest paints
+      const nearest = closestPaints(color);
+      document.getElementById("matches").innerHTML = "<h3>Closest paints:</h3>" + nearest.map(p => `
+        <div class="paint">
+          <div class="paint-swatch" style="background:${p.color}"></div>
+          ${p.name} (${p.color}, ΔE=${p.deltaE})
+        </div>
+      `).join("");
+    }
+
+    async function init() {
+      // Load paints JSON
+      //const resp = await fetch("paints.json");
+      //paints = await resp.json();
+
+      const search = document.getElementById("search");
+      search.addEventListener("change", e => updateColor(e.target.value));
+
+      // Enter key triggers
+      search.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+          e.preventDefault(); // stop the form from submitting/reloading
+          updateColor(search.value);
+        }
+      });
+
+      // Also on blur / change
+      search.addEventListener("change", e => updateColor(e.target.value));
+
+      // Load from URL if present
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("q")) {
+        const q = params.get("q");
+        search.value = q;
+        updateColor(q);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
