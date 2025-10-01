@@ -7,9 +7,10 @@
 - [V] Display exact name match
 - [ ] Nicer URL
 - [X] same border on mini colors as on main bar
-- [ ] put closest colors in table
+- [V] put closest colors in table
 - [V] hsl/hsb show Nan for black
 - [V] remember selection
+- [ ] first time clicking on dropdown doesn't work
 
 -->
 <!DOCTYPE html>
@@ -17,6 +18,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Color Finder</title>
+  <link rel="icon" type="image/gif" href="favicon.gif">
   <style>
     body {
       font-family: sans-serif;
@@ -71,6 +73,17 @@
     .bar.red { background: red; }
     .bar.green { background: green; }
     .bar.blue { background: blue; }
+
+    #colorDropdown {
+      padding: 0.2rem;
+      font-size: 1rem;
+      font-family: sans-serif;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      cursor: pointer;
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -96,11 +109,11 @@
   <script src="../data/twothincoats_colors.json"></script>
   <script>
     // see https://gka.github.io/chroma.js/
-    colorsets = {}
-    colorsets["RAL"] = ral_colors;
-    colorsets["Citadel"] = citadel_colors;
-    colorsets["Citadel (sampled)"] = citadel_colors_sampled;
-    colorsets["Two Thin Coats"] = twothincoats_colors;
+    colorSets = {}
+    colorSets["RAL"] = ral_colors;
+    colorSets["Citadel"] = citadel_colors;
+    colorSets["Citadel (sampled)"] = citadel_colors_sampled;
+    colorSets["Two Thin Coats"] = twothincoats_colors;
 
     function LRV(color) {
       // Relative luminance (Y from XYZ, approximated)
@@ -159,7 +172,7 @@
 
     function findColorInSets(value, threshold=0.5) {
       let best = null, bestScore = 0;
-      for(const set of Object.values(colorsets))
+      for(const set of Object.values(colorSets))
         for(const [name, hex] of Object.entries(set)) {
           const score = fuzzyEqStr(value, name);
           if(score>bestScore) { bestScore=score; best=hex; }
@@ -184,7 +197,7 @@
       hex = chroma(hex).hex().toLowerCase(); // normalize
       const matches = [];
 
-      for (const [setName, setColors] of Object.entries(colorsets)) {
+      for (const [setName, setColors] of Object.entries(colorSets)) {
         for (const [name, colorHex] of Object.entries(setColors)) {
           if (chroma(colorHex).hex().toLowerCase() === hex) {
             matches.push({ set: setName, name, hex: colorHex });
@@ -291,29 +304,50 @@
       updateClosestColors(color);
     }
 
-    function updateClosestColors(color)
-    {
-      let currentSet = localStorage.getItem("currentColorSet") || "RAL";
+    function updateClosestColors(color) {
+      let currentSet = localStorage.getItem("currentSet") || "Citadel";
 
-      let options = Object.keys(colorsets).map(k => 
+      let options = Object.keys(colorSets).map(k => 
         `<option value="${k}" ${currentSet === k ? "selected" : ""}>${k}</option>`
         ).join("");
 
-      const colorset = `<select id="colorSet">${options}</select>`;
+      const colorDropdown = `<select id="colorDropdown">${options}</select>`;
+      const nearest = closestColors(colorSets[currentSet], color, 6);
 
-      const nearest = closestColors(colorsets[currentSet], color, 5);
-      document.getElementById("matches").innerHTML = "<h3>Closest colors:</h3>" + colorset + nearest.map(p => `
-        <a href="?q=${encodeURIComponent(p.name)}" class="color" style="text-decoration:none; color:inherit;">
-          <div class="color-swatch" style="background:${p.color}"></div>
-          ${p.name} (${p.color.toLowerCase()}, ΔE=${p.deltaE.toFixed(2)})
-        </a>
+      const nearestRows = nearest.map(p => `
+        <tr>
+          <td style="padding:4px 3px;">
+            <a href="?q=${encodeURIComponent(p.color)}" style="display:flex; align-items:center; text-decoration:none; color:inherit;">
+              <div class="color-swatch" style="background:${p.color}; margin-right:0.5rem;"></div>
+              ${p.name}
+            </a>
+          </td>
+          <td>${p.color.toLowerCase()}</td>
+          <td>${p.deltaE.toFixed(2)}</td>
+        </tr>
       `).join("");
 
+      document.getElementById("matches").innerHTML = `
+        <h3>Closest colors:</h3>
+        ${colorDropdown}
+        <table style="border-collapse:collapse; width:100%;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Color</th>
+              <th style="text-align:left;">HEX</th>
+              <th style="text-align:left;">ΔE</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${nearestRows}
+          </tbody>
+        </table>
+      `;
+
       // re-bind dropdown
-      document.getElementById("colorSet").addEventListener("change", e => {
-        //colors = colorsets[e.target.value];
+      document.getElementById("colorDropdown").addEventListener("change", e => {
         currentSet = e.target.value;
-        localStorage.setItem("currentColorSet", currentSet); // remember selection
+        localStorage.setItem("currentSet", currentSet); // remember selection
         updateClosestColors(color);
       });
     }
