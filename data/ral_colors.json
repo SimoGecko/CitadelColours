@@ -1,7 +1,7 @@
 // List of 216 RAL Colors, taken from https://gist.github.com/lunohodov/1995178
 // This differs from the list on the official site (https://www.ral-farben.de/en/all-ral-colours)
 // or wikipedia 
-const paints = {
+const ral_colors = {
   "RAL 1000": "#CDBA88",
   "RAL 1001": "#D0B084",
   "RAL 1002": "#D2AA6D",

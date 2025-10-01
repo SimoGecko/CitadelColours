@@ -1,5 +1,5 @@
 // List of 128 Citadel Sampled Colors by Stahly Painters
-const paints = {
+const citadel_colors_sampled = {
   "Rhinox Hide": "#211413",
   "Thondia Brown": "#31241F",
   "Catachan Flesh": "#382621",
