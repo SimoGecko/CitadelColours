@@ -1,3 +1,17 @@
+<!-- TODO
+- [V] search by color name (fuzzy)
+- [ ] Color sets, separated by Color category
+- [V] select set to use for closest color
+- [V] clickable closest colors
+- [ ] RGB/CMYK/RYB charts
+- [V] Display exact name match
+- [ ] Nicer URL
+- [X] same border on mini colors as on main bar
+- [ ] put closest colors in table
+- [V] hsl/hsb show Nan for black
+- [V] remember selection
+
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,6 +81,7 @@
 
   <div id="content" style="visibility:hidden;">
     <div id="swatch"></div>
+    <div id="exactMatches"></div>
     <div id="output"></div>
     <a id="link"></a>
     <div id="charts"></div>
@@ -78,14 +93,14 @@
   <script src="../data/ral_colors.json"></script>
   <script src="../data/citadel_colors.json"></script>
   <script src="../data/citadelsampled_colors.json"></script>
+  <script src="../data/twothincoats_colors.json"></script>
   <script>
     // see https://gka.github.io/chroma.js/
     colorsets = {}
-    colorsets["ral"] = ral_colors;
-    colorsets["citadel"] = citadel_colors;
-    colorsets["citadel_sampled"] = citadel_colors_sampled;
-
-    colors = colorsets["ral"]; // active
+    colorsets["RAL"] = ral_colors;
+    colorsets["Citadel"] = citadel_colors;
+    colorsets["Citadel (sampled)"] = citadel_colors_sampled;
+    colorsets["Two Thin Coats"] = twothincoats_colors;
 
     function LRV(color) {
       // Relative luminance (Y from XYZ, approximated)
@@ -131,17 +146,53 @@
       return [r, y, b];
     }
 
+    function fuzzyEqStr(a, b) {
+      a = a.toLowerCase(); b = b.toLowerCase();
+      const m = a.length, n = b.length;
+      const dp = Array.from({length:m+1}, (_,i)=>Array(n+1).fill(0));
+      for(let i=0;i<=m;i++) dp[i][0]=i;
+      for(let j=0;j<=n;j++) dp[0][j]=j;
+      for(let i=1;i<=m;i++) for(let j=1;j<=n;j++)
+        dp[i][j] = a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+      return 1 - dp[m][n]/Math.max(m,n);
+    }
+
+    function findColorInSets(value, threshold=0.5) {
+      let best = null, bestScore = 0;
+      for(const set of Object.values(colorsets))
+        for(const [name, hex] of Object.entries(set)) {
+          const score = fuzzyEqStr(value, name);
+          if(score>bestScore) { bestScore=score; best=hex; }
+        }
+      return bestScore>=threshold ? best : null;
+    }
+
     function closestColors(colors, hex, n=3) {
       return Object.entries(colors)
-        .map(([name, color]) => {
-          return {
-            name,
-            color,
-            deltaE:  chroma.deltaE(hex, color)
-          };
-        })
-        .sort((a,b) => a.deltaE - b.deltaE)
-        .slice(0,n);
+      .map(([name, color]) => {
+        return {
+          name,
+          color,
+          deltaE:  chroma.deltaE(hex, color)
+        };
+      })
+      .sort((a,b) => a.deltaE - b.deltaE)
+      .slice(0,n);
+    }
+
+    function findExactMatches(hex) {
+      hex = chroma(hex).hex().toLowerCase(); // normalize
+      const matches = [];
+
+      for (const [setName, setColors] of Object.entries(colorsets)) {
+        for (const [name, colorHex] of Object.entries(setColors)) {
+          if (chroma(colorHex).hex().toLowerCase() === hex) {
+            matches.push({ set: setName, name, hex: colorHex });
+          }
+        }
+      }
+
+      return matches; // empty array if none
     }
 
     function updateColor(value) {
@@ -152,19 +203,35 @@
 
       let color;
       try {
-        if (colors[value]) {
-          color = colors[value];
+        const found = findColorInSets(value);
+        if (found) {
+          color = found;
         } else {
-          color = chroma(value).hex();
+          color = chroma(value).hex(); // fallback to interpreting as hex/rgb/hsl
         }
+
         document.getElementById("message").textContent = "";
         document.getElementById("content").style.visibility = "";
       } catch {
-        document.getElementById("message").textContent = "Invalid color input.";
+        document.getElementById("message").textContent = "No color found.";
         document.getElementById("content").style.visibility = "hidden";
         return;
       }
 
+      // find exact
+      const exactMatches = findExactMatches(color);
+
+      if (exactMatches.length) {
+        document.getElementById("exactMatches").innerHTML =
+          "<h3>Exact matches:</h3>" +
+          exactMatches.map(m =>
+            `<div class="color">
+              <div class="color-swatch" style="background:${m.hex}"></div>
+              ${m.name} (${m.set})
+            </div>`).join("");
+      } else {
+        document.getElementById("exactMatches").innerHTML = "";
+      }
 
       // Update swatch
       document.getElementById("swatch").style.background = color;
@@ -196,13 +263,17 @@
         </div>
       `;
 
+      function safeHue(h) {
+        return isNaN(h) ? 0 : h;
+      }
+
       document.getElementById("output").innerHTML = `
         <h3>Conversions</h3>
         <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%;">
           <tr><td><b>HEX</b></td>    <td>${hex}</td></tr>
           <tr><td><b>RGB</b></td>    <td>${rgb[0]}, ${rgb[1]}, ${rgb[2]}</td></tr>
-          <tr><td><b>HSL</b></td>    <td>${hsl[0].toFixed(1)}°, ${p(hsl[1])}, ${p(hsl[2])}</td></tr>
-          <tr><td><b>HSV/HSB</b></td><td>${hsv[0].toFixed(1)}°, ${p(hsv[1])}, ${p(hsv[2])}</td></tr>
+          <tr><td><b>HSL</b></td>    <td>${safeHue(hsl[0]).toFixed(1)}°, ${p(hsl[1])}, ${p(hsl[2])}</td></tr>
+          <tr><td><b>HSV/HSB</b></td><td>${safeHue(hsv[0]).toFixed(1)}°, ${p(hsv[1])}, ${p(hsv[2])}</td></tr>
           <tr><td><b>CMYK</b></td>   <td>${p(cmyk[0])}, ${p(cmyk[1])}, ${p(cmyk[2])}, ${p(cmyk[3])}</td></tr>
           <tr><td><b>LAB</b></td>    <td>${lab[0].toFixed(3)}, ${lab[1].toFixed(3)}, ${lab[2].toFixed(3)}</td></tr>
           <tr><td><b>RYB</b></td>    <td>${p(ryb[0])}, ${p(ryb[1])}, ${p(ryb[2])}</td></tr>
@@ -216,17 +287,35 @@
       // Show charts
       document.getElementById("charts").innerHTML = "<h3>Charts:</h3>";
 
-
       // Show closest colors
-      colorset = '<select id="colorSet"></select>'
+      updateClosestColors(color);
+    }
 
-      const nearest = closestColors(colors, color, 5);
+    function updateClosestColors(color)
+    {
+      let currentSet = localStorage.getItem("currentColorSet") || "RAL";
+
+      let options = Object.keys(colorsets).map(k => 
+        `<option value="${k}" ${currentSet === k ? "selected" : ""}>${k}</option>`
+        ).join("");
+
+      const colorset = `<select id="colorSet">${options}</select>`;
+
+      const nearest = closestColors(colorsets[currentSet], color, 5);
       document.getElementById("matches").innerHTML = "<h3>Closest colors:</h3>" + colorset + nearest.map(p => `
-        <div class="color">
+        <a href="?q=${encodeURIComponent(p.name)}" class="color" style="text-decoration:none; color:inherit;">
           <div class="color-swatch" style="background:${p.color}"></div>
           ${p.name} (${p.color.toLowerCase()}, ΔE=${p.deltaE.toFixed(2)})
-        </div>
+        </a>
       `).join("");
+
+      // re-bind dropdown
+      document.getElementById("colorSet").addEventListener("change", e => {
+        //colors = colorsets[e.target.value];
+        currentSet = e.target.value;
+        localStorage.setItem("currentColorSet", currentSet); // remember selection
+        updateClosestColors(color);
+      });
     }
 
     async function init() {
