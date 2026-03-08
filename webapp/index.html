@@ -10,7 +10,10 @@
 - [V] put closest colors in table
 - [V] hsl/hsb show Nan for black
 - [V] remember selection
-- [ ] first time clicking on dropdown doesn't work
+- [?] bug: first time clicking on dropdown doesn't work
+- [ ] improve fuzzy color search (try ultramarine, get fulgrim pink)
+- [ ] add "all sets" in color comparison. ALlow more than 6 colors
+
 
 -->
 <!DOCTYPE html>
@@ -101,6 +104,17 @@
     <div id="matches"></div>
   </div>
 
+<div id="pageSets">
+  <h2>Color Sets</h2>
+  <div id="setsList"></div>
+</div>
+
+<div id="pageColors" style="display:none;">
+  <button id="backBtn">← Back</button>
+  <h2 id="setTitle"></h2>
+  <div id="colorsList" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+</div>
+
 
   <script src="https://unpkg.com/chroma-js@2.4.2/chroma.min.js"></script>
   <script src="../data/ral_colors.json"></script>
@@ -114,6 +128,49 @@
     colorSets["Citadel"] = citadel_colors;
     colorSets["Citadel (sampled)"] = citadel_colors_sampled;
     colorSets["Two Thin Coats"] = twothincoats_colors;
+
+    function showSetsPage() {
+      document.getElementById("pageSets").style.display = "block";
+      document.getElementById("pageColors").style.display = "none";
+
+      const setsList = document.getElementById("setsList");
+      setsList.innerHTML = "";
+
+      for (const [setName, setColors] of Object.entries(colorSets)) {
+        const div = document.createElement("div");
+        div.style.cursor = "pointer";
+        div.style.margin = "0.5rem 0";
+        div.textContent = `${setName} — ${Object.keys(setColors).length} colors`;
+        div.addEventListener("click", () => showColorsPage(setName));
+        setsList.appendChild(div);
+      }
+    }
+
+    function showColorsPage(setName) {
+      document.getElementById("pageSets").style.display = "none";
+      document.getElementById("pageColors").style.display = "block";
+
+      document.getElementById("setTitle").textContent = setName;
+
+      const colorsList = document.getElementById("colorsList");
+      colorsList.innerHTML = "";
+
+      for (const [name, hex] of Object.entries(colorSets[setName])) {
+        const div = document.createElement("div");
+        div.style.width = "60px";
+        div.style.height = "60px";
+        div.style.background = hex;
+        div.style.border = "1px solid #000";
+        div.title = name + " — " + hex;
+        colorsList.appendChild(div);
+      }
+    }
+
+    // back button
+    document.getElementById("backBtn").addEventListener("click", showSetsPage);
+
+    // show the sets page by default
+    showSetsPage();
 
     function LRV(color) {
       // Relative luminance (Y from XYZ, approximated)
@@ -170,7 +227,7 @@
       return 1 - dp[m][n]/Math.max(m,n);
     }
 
-    function findColorInSets(value, threshold=0.5) {
+    function findColorInSets(value, threshold=0.51) {
       let best = null, bestScore = 0;
       for(const set of Object.values(colorSets))
         for(const [name, hex] of Object.entries(set)) {
@@ -312,7 +369,7 @@
         ).join("");
 
       const colorDropdown = `<select id="colorDropdown">${options}</select>`;
-      const nearest = closestColors(colorSets[currentSet], color, 6);
+      const nearest = closestColors(colorSets[currentSet], color, 10);
 
       const nearestRows = nearest.map(p => `
         <tr>
@@ -346,6 +403,7 @@
 
       // re-bind dropdown
       document.getElementById("colorDropdown").addEventListener("change", e => {
+      //document.getElementById("matches").querySelector("#colorDropdown").addEventListener("change", e => {
         currentSet = e.target.value;
         localStorage.setItem("currentSet", currentSet); // remember selection
         updateClosestColors(color);
